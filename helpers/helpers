@@ -26,3 +26,45 @@ toLower () {
 dbPath () {
     echo "$HOME/shql_db/$CURRENTDB"
 }
+
+
+
+split () {
+    str=$1
+    d=$2
+
+    word=''
+    typeset -i i
+    typeset -i size
+    size=${#str}
+    i=0
+
+    while [ $i -lt $size ]
+    do
+        char=${str:$i:1}
+        if [[ $char == "," ]]
+            then
+            echo $word
+            word=''
+        else
+            word="${word}$char"
+        fi
+        i+=1
+    done
+    echo $word
+}
+
+
+join () {
+    str=''
+    for value in $*
+    do
+        if [[ -z $str ]]
+            then
+            str=$value
+        else
+            str="$str:$value"
+        fi
+    done
+    echo $str
+}

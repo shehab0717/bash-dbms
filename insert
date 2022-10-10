@@ -1,0 +1,44 @@
+#! /bin/bash
+
+#insert 1, shehab, 24 into tableName
+
+if [[ -z $CURRENTDB ]]
+    then
+    echo Error: you must connect to database first
+else
+    source $HOME/bin/shql/helpers/helpers
+
+    typeset -i i
+    typeset -i valuesSize
+    i=0
+    valuesSize=$(( $# - 2 ))
+    args=($*)
+    values=''
+
+    while [ $i -lt $valuesSize ]
+    do
+        values="${values}${args[$i]}"
+        i+=1
+    done
+    tableName=${args[$(( $valuesSize + 1 ))]}
+    splitedValues=($(split $values ","))
+
+    #check meta file to get info about table (number of columns, type of each column)
+
+    metaFile=$HOME/shql_db/$CURRENTDB/meta/$tableName
+    tableFile=$HOME/shql_db/$CURRENTDB/$tableName
+
+    if [ -f $tableFile -a -f $metaFile ]
+        then
+        columnsCount=`head -n 1 $metaFile | awk -F: '{print $2}'`
+        if [ ${#splitedValues[@]} -eq $columnsCount ]
+            then
+            echo $(join ${splitedValues[@]}) >> $tableFile
+        else
+            echo "Erro: Your table has $columnsCount columns, you entered ${#splitedValues[@]} values"
+        fi
+    else
+        echo table: $tableName does not exist
+    fi
+fi
+

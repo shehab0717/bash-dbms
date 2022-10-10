@@ -1,0 +1,11 @@
+#! /bin/bash
+
+#list all tables in the current database
+
+
+if [[ -z $CURRENTDB ]]
+    then 
+    echo Error: connect to database first
+else
+    ls $HOME/shql_db/$CURRENTDB/meta
+fi

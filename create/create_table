@@ -88,7 +88,7 @@ else
     echo "$tableName:$columnsCount" >> $metaFile
     for i in "${!columnsNames[@]}"
     do
-        echo "${columnsNames[i]}:$i:${columnsTypes[i]}" >> $metaFile
+        echo "${columnsNames[i]}:$(( $i + 1 )):${columnsTypes[i]}" >> $metaFile
     done
 fi
 

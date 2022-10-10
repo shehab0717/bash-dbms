@@ -1,0 +1,69 @@
+#! /bin/bash
+
+#select col1, col2, col3 from table_name
+
+source $HELPERS
+
+if [[ -z $CURRENTDB ]]
+    then
+    echo Error: connect to database first
+
+else
+    args=($*)
+    valuesSize=$(( $# - 2 ))
+    columns=''
+    typeset -i i
+    i=0
+    while [ $i -lt $valuesSize ]
+    do
+        columns="${columns}${args[$i]}"
+        i+=1
+    done
+
+    # echo $values
+
+    
+
+    tableName=${args[(( $valuesSize + 1 ))]}
+
+    tableFile="$HOME/shql_db/$CURRENTDB/$tableName"
+    metaFile="$HOME/shql_db/$CURRENTDB/meta/$tableName"
+
+    if [ -f $tableFile -a -f $metaFile ]
+    then
+
+        if [ $columns == "all" ]
+            then
+            splitedColumns=($(sed "1d" $metaFile | awk -F: '{print $1}'))
+        else
+            splitedColumns=($(split $columns ","))
+        fi
+
+        colNumbers=()
+
+        for col in "${splitedColumns[@]}"
+        do
+            number=`colNumber $tableName $col`
+            colNumbers+=($number)
+        done
+
+        fields=''
+        for num in "${colNumbers[@]}"
+        do
+            fields="$fields,$num"
+        done 
+        fields="${fields#?}"
+        echo "------------------------------"
+        echo "${splitedColumns[@]}"
+        echo "------------------------------"
+        for line in $(cat $tableFile)
+        do
+            echo $( echo $line | cut -d ":" -f $fields --output-delimiter=" ")
+            #cut command
+            # echo $line
+        done
+    else
+        echo "Error: table ($tableName) does not exist"
+    fi
+fi
+

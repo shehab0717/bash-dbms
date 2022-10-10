@@ -1,0 +1,10 @@
+#! /bin/bash
+
+dbPath="$HOME/shql_db/$1"
+if [ -d  $dbPath ]
+    then 
+    rm -R $dbPath
+    echo $1 deleted successfully
+else
+    echo "There is no database $1"
+fi

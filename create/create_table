@@ -85,6 +85,7 @@ else
         read -p "Col #$(( $columnsCount + 1 )) (<name> <type>): " input
     done
     touch $tableFile
+    echo "$tableName:$columnsCount" >> $metaFile
     for i in "${!columnsNames[@]}"
     do
         echo "${columnsNames[i]}:$i:${columnsTypes[i]}" >> $metaFile

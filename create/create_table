@@ -1,0 +1,97 @@
+#! /bin/bash
+
+source $HOME/bin/shql/helpers/helpers
+
+
+filePath=''
+tableName=""
+typeset -i columnsCount
+columnsCount=0
+columnsNames=()
+columnsTypes=()
+
+getTableName () {
+    read -p "Enter the table name > " tableName
+    if validName $tableName
+        then
+        return 0
+    else
+        getTableName
+    fi
+}
+
+definePrimaryKey () {
+    read -p "Col #$(( $columnsCount + 1 )) [primary key] (<name> <type>) > " input
+    pk=($input)
+    if [ ! ${#pk[@]} -eq 2 ]
+        then 
+        echo "Invalid primary key!!"
+        definePrimaryKey
+    else
+        local name=${pk[0]}
+        local type=${pk[1]}
+        if validName $name && validType $type
+            then
+            columnsNames+=($name)
+            columnsTypes+=($type)
+            columnsCount=$columnsCount+1
+        else
+            definePrimaryKey
+        fi
+    fi
+}
+
+
+defineCol () {
+    if [ $# -eq 2 ]
+        then
+            if validName $1 && validType $2
+                then
+                columnsCount+=1
+                columnsNames+=($1)
+                columnsTypes+=($2)
+            fi
+    else
+        echo "Ivalid column!!"
+    fi
+}
+
+#SART
+if validName $1
+    then tableName=$1
+else
+    getTableName
+fi
+
+tableFile="$HOME/shql_db/$CURRENTDB/$tableName"
+metaFile="$HOME/shql_db/$CURRENTDB/meta/$tableName"
+
+#check table existance
+if [ -f $tableFile ]
+    then
+    echo Error: there is already table [ $tableName ]
+
+else
+    #primary key
+    definePrimaryKey
+
+    #Columns
+    input=""
+    read -p "Col #$(( $columnsCount + 1 )) (<name> <type>): " input
+
+    while [ "$input" != "done" ]
+    do
+        defineCol $input
+        read -p "Col #$(( $columnsCount + 1 )) (<name> <type>): " input
+    done
+    touch $tableFile
+    for i in "${!columnsNames[@]}"
+    do
+        echo "${columnsNames[i]}:$i:${columnsTypes[i]}" >> $metaFile
+    done
+fi
+
+
+
+
+

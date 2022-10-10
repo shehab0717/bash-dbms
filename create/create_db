@@ -1,0 +1,34 @@
+#! /bin/bash
+
+source $HOME/bin/shql/helpers/helpers
+
+dbName=''
+
+getDBName () {
+    read -p "Enter the database name > " dbName
+    if validName $dbName
+        then
+        return 0
+    else
+        getDBName
+    fi
+}
+
+if validName $1
+    then 
+    dbName=$1
+else
+    getDBName
+fi
+
+if [ -d $HOME/shql_db ]
+    then
+    mkdir $HOME/shql_db/$dbName
+    mkdir $HOME/shql_db/$dbName/meta
+else
+    mkdir $HOME/shql_db
+    mkdir $HOME/shql_db/$dbName
+    mkdir $HOME/shql_db/$dbName/meta
+fi
+
+echo "database [$dbName] created succesfully"

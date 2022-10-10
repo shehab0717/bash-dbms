@@ -1,0 +1,28 @@
+#! /bin/bash
+
+validType () {
+    local type=`toLower $1`
+    if [ $type == "string" -o $type == "int" ]
+        then
+        return 0
+    else
+        echo Invalid type: $1
+        return 1
+    fi
+}
+validName () {
+    if [[ $1 =~ [a-zA-Z][a-zA-Z]* ]]
+        then
+        return 0
+    else
+        echo Ivalid name: $1
+        return 1
+    fi
+}
+toLower () {
+    echo $* | awk '{print tolower($0)}'
+}
+
+dbPath () {
+    echo "$HOME/shql_db/$CURRENTDB"
+}

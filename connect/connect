@@ -1,0 +1,35 @@
+#! /bin/bash
+
+source $HOME/bin/shql/helpers/helpers
+
+dbName=''
+
+getDBName () {
+    read -p "Enter the database name > " dbName
+    if validName $dbName
+        then 
+        return 0
+    else
+        getDBName
+    fi
+}
+
+checkDB () {
+    if [ -d $HOME/shql_db/$1 ]
+        then 
+        echo "Working on [ $1 ] database"
+    else
+        echo "Database [ $1 ] doesn't exist!!"
+    fi
+}
+
+if [ -z $1 ]
+    then
+    getDBName
+else
+    dbName=$1
+fi
+
+checkDB $dbName
+export CURRENTDB=$dbName
+

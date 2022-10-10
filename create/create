@@ -1,0 +1,19 @@
+#! /bin/bash
+
+#create [table or database] name
+
+if [ $# -eq 0 ]
+    then
+    echo create: Missing argument
+elif [ $1 == "table" ]
+    then
+    if [ -z $CURRENTDB ]
+        then
+        echo Error: connect to database first
+    else
+        create_table $2
+    fi
+elif [ $1 == 'database' ]
+    then
+    create_db $2
+fi

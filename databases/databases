@@ -1,0 +1,13 @@
+#! /bin/bash
+
+
+dbs=$(ls $HOME/shql_db)
+
+echo "connected to: $CURRENTDB"
+
+if [[ -z $dbs ]]
+    then
+    echo No databases
+else
+    echo $dbs
+fi

@@ -6,6 +6,9 @@ base="$HOME/bin/shql"
 PATH="$base:$base/connect:$base/create:$base/databases:$base/helpers:$PATH"
 PATH="$base/drop:$PATH"
 
+
+export HELPERS="$HOME/bin/shql/helpers/helpers"
+
 while true
 do
 	read -p "shql > " cmd

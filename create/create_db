@@ -1,6 +1,6 @@
 #! /bin/bash
 
-source $HOME/bin/shql/helpers/helpers
+source $HELPERS
 
 dbName=''
 

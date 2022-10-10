@@ -68,3 +68,15 @@ join () {
     done
     echo $str
 }
+
+colNumber () {
+    tableName=$1
+    colName=$2
+    second='$2'
+
+    tableFile=$HOME/shql_db/$CURRENTDB/meta/$tableName
+    
+    number=$(sed -n "/$colName/p" $tableFile | awk -F: "{print $second}")
+
+    echo $number
+}

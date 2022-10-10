@@ -1,0 +1,16 @@
+#! /bin/bash
+
+if [ $# -eq 2 ]
+    then
+    if [ $1 == 'database' ]
+        then
+        source drop_db $2
+    elif [ $1 == 'table' ]
+        then
+        echo deleting table: $2
+    else
+        echo drop $1 $2: not recognized 
+    fi
+else
+    echo drop: missing arguments
+fi

@@ -1,0 +1,17 @@
+#! /bin/bash
+
+if [[ -z $CURRENTDB ]]
+    then
+    echo you are not connect to any database
+else
+    tablePath="$HOME/shql_db/$CURRENTDB/$1"
+    metaPath="$HOME/shql_db/$CURRENTDB/meta/$1"
+    if [[ -f $tablePath ]]
+        then
+        rm $tablePath
+        rm $metaPath
+        echo table $1 dropped successfully
+    else
+        echo there is no table: $1
+    fi
+fi

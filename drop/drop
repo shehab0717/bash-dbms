@@ -7,7 +7,7 @@ if [ $# -eq 2 ]
         source drop_db $2
     elif [ $1 == 'table' ]
         then
-        echo deleting table: $2
+        source drop_table $2
     else
         echo drop $1 $2: not recognized 
     fi

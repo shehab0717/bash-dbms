@@ -15,19 +15,18 @@ else
 
     #Only one condition :|
     condition=$(afterWord "$temp" "where")
-    conditionArray=($(split "$condition" "="))
 
     tableFile="$HOME/shql_db/$CURRENTDB/$tableName"
     metaFile="$HOME/shql_db/$CURRENTDB/meta/$tableName"
 
     if [ -f $tableFile -a -f $metaFile ]
     then
-
+        splitedColumns=()
         if [ "$columns" == "all" ]
             then
             splitedColumns=($(sed "1d" $metaFile | awk -F: '{print $1}'))
         else
-            splitedColumns=($(split "$columns" ","))
+            split "$columns" "," splitedColumns
         fi
 
         colNumbers=()
@@ -58,10 +57,17 @@ else
             echo "------------------------------"
             for line in $(cat $tableFile)
             do
-                conditionColNumber="$(colNumber $tableName ${conditionArray[0]})"
-                if cehckCondition $line $conditionColNumber "${conditionArray[1]}"
+                if [[ -z $condition ]]
                     then
-                    echo $( echo $line | cut -d ":" -f $fields --output-delimiter=" ")
+                    echo $(echo $line | cut -d ':' -f $fields --output-delimiter=" | ")
+                else
+                    conditionArray=()
+                    split "$condition" "=" conditionArray
+                    conditionColNumber="$(colNumber $tableName ${conditionArray[0]})"
+                    if cehckCondition $line $conditionColNumber "${conditionArray[1]}"
+                        then
+                        echo $(echo $line | cut -d ':' -f $fields)
+                    fi
                 fi
             done
         fi

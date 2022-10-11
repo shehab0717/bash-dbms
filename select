@@ -13,8 +13,9 @@ else
     temp=$(afterWord "$*" "from")
     tableName=$(beforeWord "$temp" "where")
 
-    #condition
-    
+    #Only one condition :|
+    condition=$(afterWord "$temp" "where")
+    conditionArray=($(split "$condition" "="))
 
     tableFile="$HOME/shql_db/$CURRENTDB/$tableName"
     metaFile="$HOME/shql_db/$CURRENTDB/meta/$tableName"
@@ -57,7 +58,11 @@ else
             echo "------------------------------"
             for line in $(cat $tableFile)
             do
-                echo $( echo $line | cut -d ":" -f $fields --output-delimiter=" ")
+                conditionColNumber="$(colNumber $tableName ${conditionArray[0]})"
+                if cehckCondition $line $conditionColNumber "${conditionArray[1]}"
+                    then
+                    echo $( echo $line | cut -d ":" -f $fields --output-delimiter=" ")
+                fi
             done
         fi
     else

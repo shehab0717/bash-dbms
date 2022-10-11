@@ -32,6 +32,7 @@ dbPath () {
 split () {
     str=$1
     d=$2
+    arr="$3"
 
     word=''
     typeset -i i
@@ -44,30 +45,16 @@ split () {
         char=${str:$i:1}
         if [[ $char == $d ]]
             then
-            echo $(trim "$word")
+            eval "$arr+=(\"$(trim "$word")\")"
             word=''
         else
             word="${word}$char"
         fi
         i+=1
     done
-    echo $(trim "$word")
+    eval "$arr+=(\"$(trim "$word")\")"
 }
 
-
-join () {
-    str=''
-    for value in $*
-    do
-        if [[ -z $str ]]
-            then
-            str=$value
-        else
-            str="$str:$value"
-        fi
-    done
-    echo $str
-}
 
 colNumber () {
     tableName=$1

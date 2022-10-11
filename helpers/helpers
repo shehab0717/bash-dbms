@@ -42,7 +42,7 @@ split () {
     while [ $i -lt $size ]
     do
         char=${str:$i:1}
-        if [[ $char == "," ]]
+        if [[ $char == $d ]]
             then
             echo $(trim "$word")
             word=''

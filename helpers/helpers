@@ -163,3 +163,21 @@ trim () {
     echo "${str:$i:$count}"
 
 }
+
+#$1 -> data
+#$2 -> field
+#$3 -> trueValue
+
+cehckCondition () {
+    line=$1
+    fieldNumber=$2
+    trueValue=$3
+
+    value=$(echo $line | cut -d ":" -f $"$fieldNumber")
+    if [[ $value == $trueValue ]]
+        then
+        return 0
+    else
+        return 1
+    fi
+}

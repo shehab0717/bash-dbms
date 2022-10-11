@@ -8,20 +8,12 @@ if [[ -z $CURRENTDB ]]
 else
     source $HOME/bin/shql/helpers/helpers
 
-    typeset -i i
-    typeset -i valuesSize
-    i=0
-    valuesSize=$(( $# - 2 ))
-    args=($*)
-    values=''
-
-    while [ $i -lt $valuesSize ]
-    do
-        values="${values}${args[$i]}"
-        i+=1
-    done
-    tableName=${args[$(( $valuesSize + 1 ))]}
-    splitedValues=($(split $values ","))
+    
+    
+    values="$(beforeWord "$*" "into")"
+    tableName=$(afterWord "$*" "into")
+    splitedValues=()
+    split "$values" "," splitedValues
 
     #check meta file to get info about table (number of columns, type of each column)
 
@@ -33,7 +25,7 @@ else
         columnsCount=`head -n 1 $metaFile | awk -F: '{print $2}'`
         if [ ${#splitedValues[@]} -eq $columnsCount ]
             then
-            echo $(join ${splitedValues[@]}) >> $tableFile
+            echo $(echo $values | awk '{gsub(/,/,":"); print}') >> $tableFile
         else
             echo "Erro: Your table has $columnsCount columns, you entered ${#splitedValues[@]} values"
         fi

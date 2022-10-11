@@ -1,6 +1,6 @@
 #! /bin/bash
 
-#select col1, col2, col3 from table_name
+#select cols from table_name where condition
 
 source $HELPERS
 
@@ -9,22 +9,12 @@ if [[ -z $CURRENTDB ]]
     echo Error: connect to database first
 
 else
-    args=($*)
-    valuesSize=$(( $# - 2 ))
-    columns=''
-    typeset -i i
-    i=0
-    while [ $i -lt $valuesSize ]
-    do
-        columns="${columns}${args[$i]}"
-        i+=1
-    done
+    columns=$(beforeWord "$*" "from")
+    temp=$(afterWord "$*" "from")
+    tableName=$(beforeWord "$temp" "where")
 
-    # echo $values
-
+    #condition
     
-
-    tableName=${args[(( $valuesSize + 1 ))]}
 
     tableFile="$HOME/shql_db/$CURRENTDB/$tableName"
     metaFile="$HOME/shql_db/$CURRENTDB/meta/$tableName"
@@ -32,36 +22,44 @@ else
     if [ -f $tableFile -a -f $metaFile ]
     then
 
-        if [ $columns == "all" ]
+        if [ "$columns" == "all" ]
             then
             splitedColumns=($(sed "1d" $metaFile | awk -F: '{print $1}'))
         else
-            splitedColumns=($(split $columns ","))
+            splitedColumns=($(split "$columns" ","))
         fi
 
         colNumbers=()
 
+        error=''
         for col in "${splitedColumns[@]}"
         do
             number=`colNumber $tableName $col`
+            if [ -z $number ]
+                then
+                echo "Error: table ($tableName) does not have column ($col)"
+                error="error"
+                break
+            fi
             colNumbers+=($number)
         done
-
-        fields=''
-        for num in "${colNumbers[@]}"
-        do
-            fields="$fields,$num"
-        done 
-        fields="${fields#?}"
-        echo "------------------------------"
-        echo "${splitedColumns[@]}"
-        echo "------------------------------"
-        for line in $(cat $tableFile)
-        do
-            echo $( echo $line | cut -d ":" -f $fields --output-delimiter=" ")
-            #cut command
-            # echo $line
-        done
+        if [ -z $error ]
+            then
+            fields=''
+            for num in "${colNumbers[@]}"
+            do
+                fields="$fields,$num"
+            done 
+            #remove first character
+            fields="${fields#?}"
+            echo "------------------------------"
+            echo "${splitedColumns[@]}"
+            echo "------------------------------"
+            for line in $(cat $tableFile)
+            do
+                echo $( echo $line | cut -d ":" -f $fields --output-delimiter=" ")
+            done
+        fi
     else
         echo "Error: table ($tableName) does not exist"
     fi

@@ -44,14 +44,14 @@ split () {
         char=${str:$i:1}
         if [[ $char == "," ]]
             then
-            echo $word
+            echo $(trim "$word")
             word=''
         else
             word="${word}$char"
         fi
         i+=1
     done
-    echo $word
+    echo $(trim "$word")
 }
 
 
@@ -79,4 +79,87 @@ colNumber () {
     number=$(sed -n "/$colName/p" $tableFile | awk -F: "{print $second}")
 
     echo $number
+}
+
+beforeWord () {
+    str=$1
+    sep=$2
+
+    sepLength=${#sep}
+    strLength=${#str}
+
+    typeset -i i
+    i=$(( $strLength - $sepLength ))
+
+    while [ $i -gt 0 -o $i -eq 0 ]
+    do
+        current=${str:$i:$sepLength}
+        if [[ $current == $sep ]]
+            then
+            echo ${str:0:$i}
+            return 0
+        fi
+        i=$(( $i - 1 ))
+    done
+    echo $str
+}
+
+
+afterWord () {
+    str=$1
+    sep=$2
+
+    sepLength=${#sep}
+    strLength=${#str}
+
+    typeset -i i
+    typeset -i limit
+    limit=$(( $strLength - $sepLength ))
+    i=0
+
+    while [ $i -lt $limit ]
+    do
+        current=${str:$i:$sepLength}
+        if [[ $current == $sep ]]
+            then
+            echo ${str:$(( $i + $sepLength )):$strLength}
+            return 0
+        fi
+        i=$(( $i + 1 ))
+    done
+    echo ""
+}
+
+
+trim () {
+    str=$1
+
+    typeset -i i
+    typeset -i j
+
+    i=0
+    size="${#str}"
+    j=$(( $size - 1 ))
+
+    while [ $i -lt $size ]
+    do
+        if [[ "${str:$i:1}" != " " ]]
+            then
+            break
+        fi
+        i=$(( $i + 1 ))
+    done
+
+    while [ $j -gt 0 -o $j -eq 0 ]
+    do
+        if [[ "${str:$j:1}" != " " ]]
+            then
+            break
+        fi
+        j=$(( $j - 1 ))
+    done
+
+    count=$(( $j - $i + 1 ))
+    echo "${str:$i:$count}"
+
 }

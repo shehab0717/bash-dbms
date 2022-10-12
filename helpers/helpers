@@ -168,3 +168,22 @@ cehckCondition () {
         return 1
     fi
 }
+
+duplicateKey () {
+    key=$1
+    tableName=$2
+    
+    tableFile=$HOME/shql_db/$CURRENTDB/$tableName
+    exist="$(cut -d: -f 1 $tableFile | grep $key)"
+    if [[ -z $exist ]]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+joinBy () {
+    local IFS="$1"
+    shift
+    echo "$*"
+}

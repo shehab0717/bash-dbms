@@ -25,7 +25,11 @@ else
         columnsCount=`head -n 1 $metaFile | awk -F: '{print $2}'`
         if [ ${#splitedValues[@]} -eq $columnsCount ]
             then
-            echo $(echo $values | awk '{gsub(/,/,":"); print}') >> $tableFile
+            if duplicateKey "${splitedValues[0]}" $tableName ; then
+                echo "Error: duplicate key (${splitedValues[0]})"
+            else
+                echo $(echo $values | awk '{gsub(/,/,":"); print}') >> $tableFile
+            fi
         else
             echo "Erro: Your table has $columnsCount columns, you entered ${#splitedValues[@]} values"
         fi

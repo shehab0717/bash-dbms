@@ -52,24 +52,26 @@ else
             done 
             #remove first character
             fields="${fields#?}"
-            echo "------------------------------"
-            echo "${splitedColumns[@]}"
-            echo "------------------------------"
+            tmpFile="$PWD/tmp"
+            echo $(joinBy '|' "${splitedColumns[@]}") >> $tmpFile
+            IFS=$'\n'
             for line in $(cat $tableFile)
             do
                 if [[ -z $condition ]]
                     then
-                    echo $(echo $line | cut -d ':' -f $fields --output-delimiter=" | ")
+                    echo $(echo $line | cut -d ':' -f $fields --output-delimiter="|") >> $tmpFile
                 else
                     conditionArray=()
                     split "$condition" "=" conditionArray
                     conditionColNumber="$(colNumber $tableName ${conditionArray[0]})"
                     if cehckCondition $line $conditionColNumber "${conditionArray[1]}"
                         then
-                        echo $(echo $line | cut -d ':' -f $fields)
+                        echo $(echo $line | cut -d ':' -f $fields --output-delimiter="|") >> $tmpFile
                     fi
                 fi
             done
+            cat $tmpFile | column -ts "|"
+            rm $tmpFile
         fi
     else
         echo "Error: table ($tableName) does not exist"

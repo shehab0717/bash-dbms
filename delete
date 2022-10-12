@@ -1,0 +1,29 @@
+#! /bin/bash
+
+#delete from <table_name> where <condition>
+# condition like (field=value)
+
+
+condition="$(afterWord "$*" "where")"
+tableName=$2
+
+if [[ -z $condition ]]; then
+    echo "NO condition"
+else
+    conditionArray=()
+    split "$condition" "=" conditionArray
+    conditionColumn=${conditionArray[0]}
+    trueValue=${conditionArray[1]}
+    colNumber=$(colNumber $tableName $conditionColumn)
+    IFS=$'\n'
+    tableFile=$(tablePath $tableName)
+    tmpFile=$PWD/tmp
+    for line in $(cat $tableFile)
+    do
+        if ! cehckCondition "$line" $colNumber "$trueValue" ; then
+            echo "$line" >> $tmpFile
+        fi
+    done
+    cat $tmpFile > $tableFile
+    rm $tmpFile
+fi

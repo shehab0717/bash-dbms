@@ -187,3 +187,12 @@ joinBy () {
     shift
     echo "$*"
 }
+
+tablePath () {
+    echo "$HOME/shql_db/$CURRENTDB/$1"
+}
+
+
+metaPath () {
+    echo "$HOME/shql_db/$CURRENTDB/meat/$1"
+}

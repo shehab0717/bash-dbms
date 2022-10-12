@@ -61,9 +61,9 @@ colNumber () {
     colName=$2
     second='$2'
 
-    tableFile=$HOME/shql_db/$CURRENTDB/meta/$tableName
+    metaFile=$HOME/shql_db/$CURRENTDB/meta/$tableName
     
-    number=$(sed -n "/$colName/p" $tableFile | awk -F: "{print $second}")
+    number=$(grep -w $colName $metaFile | cut -d: -f 2)
 
     echo $number
 }

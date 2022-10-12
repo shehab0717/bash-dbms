@@ -14,6 +14,10 @@ else
     split "$condition" "=" conditionArray
     conditionColumn=${conditionArray[0]}
     trueValue=${conditionArray[1]}
+
+    conditionColumn=$(trim $conditionColumn)
+    trueValue=$(trim $trueValue)
+    
     colNumber=$(colNumber $tableName $conditionColumn)
     IFS=$'\n'
     tableFile=$(tablePath $tableName)

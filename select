@@ -12,6 +12,7 @@ else
     columns=$(beforeWord "$*" "from")
     temp=$(afterWord "$*" "from")
     tableName=$(beforeWord "$temp" "where")
+    tableName=$(trim $tableName)
 
     #Only one condition :|
     condition=$(afterWord "$temp" "where")

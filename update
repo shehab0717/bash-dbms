@@ -1,0 +1,91 @@
+#! /bin/bash
+
+#update [ <table_name> ] set [col1=value1, col2=value2 ] where [colx=valuey]
+
+source $HELPERS
+
+args=$*
+# args="table1 set age=555 where age=1500year"
+
+
+tableName=$(beforeWord "$args" "set")
+updates=$(afterWord "$args" "set")
+updates=$(beforeWord "$updates" "where")
+condition=$(afterWord "$args" "where")
+
+tableName=$(trim $tableName)
+# args (record, fieldNumber, newValue)
+updateRecord () {
+    record=$1
+    fieldNumber=$2
+    newValue=$3
+    recordArray=()
+    split "$record" ":" recordArray
+    recordArray[ $(( $fieldNumber - 1 )) ]=$newValue
+    record="$(joinBy ":" "${recordArray[@]}")"
+    echo $record
+    return 0
+}
+
+
+#check tableName
+
+
+
+if [[ -z $CURRENTDB ]]; then
+    echo "Error: Connect to a database first"
+elif [[ -z $tableName ]]; then
+    echo "Error: Missing table_name"
+else
+    # updateRecord "1:shehab:sh@email.com:24" "nam=ahmed"
+    tableFile=$(tablePath $tableName)
+    tmpFile="$PWD/tmp"
+    if [[ -f $tableFile ]]; then
+
+        conditionArray=()
+        split "$condition" "=" conditionArray
+        colName=${conditionArray[0]}
+        colNumber=$(colNumber $tableName $colName)
+        trueVAlue=${conditionArray[1]}
+        error=''
+        if [[ -z colNumber ]]; then
+            echo "Error: '$condition', no column $colName"
+        else
+            updatesArray=()
+            split "$updates" "," updatesArray
+            IFS=$'\n'
+            typeset -i rowsCount
+            rowsCount=0
+            for record in $(cat $tableFile)
+            do
+                if checkCondition "$record" $colNumber "$trueVAlue" ;then
+                    for update in ${updatesArray[@]}
+                    do
+                        arr=()
+                        split "$update" "=" arr
+                        fieldNumber=$(colNumber $tableName ${arr[1]})
+                        newValue=${arr[2]}
+                        if [[ -z $fieldNumber ]]; then
+                            echo "Error: $tableName does not have column ($colName) "
+                            erro=''
+                            break 2
+                        else
+                            record=$(updateRecord $record $fieldNumber $newValue)
+                        fi
+                    done
+                    rowsCount=$(( $rowsCount + 1 ))
+                    echo $record >> $tmpFile
+                else
+                    echo $record >> $tmpFile
+                fi
+            done
+        fi
+        if [[ -z $error ]]; then
+            echo "Updated successfully, $rowsCount rows affected"
+            cat $tmpFile > $tableFile
+            rm $tmpFile
+        fi
+    else
+        echo "Erro: no table: $tableName!!"
+    fi
+fi

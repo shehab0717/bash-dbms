@@ -11,7 +11,7 @@ export HELPERS="$HOME/bin/shql/helpers/helpers"
 
 while true
 do
-	read -p "shql > " cmd
+	read -p "shql@$CURRENTDB > " cmd
 	cmd=". $cmd"
 	eval $cmd
 done

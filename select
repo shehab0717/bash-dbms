@@ -65,7 +65,7 @@ else
                     conditionArray=()
                     split "$condition" "=" conditionArray
                     conditionColNumber="$(colNumber $tableName ${conditionArray[0]})"
-                    if cehckCondition $line $conditionColNumber "${conditionArray[1]}"
+                    if checkCondition $line $conditionColNumber "${conditionArray[1]}"
                         then
                         echo $(echo $line | cut -d ':' -f $fields --output-delimiter="|") >> $tmpFile
                     fi

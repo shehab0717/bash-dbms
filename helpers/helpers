@@ -155,7 +155,7 @@ trim () {
 #$2 -> field
 #$3 -> trueValue
 
-cehckCondition () {
+checkCondition () {
     line=$1
     fieldNumber=$2
     trueValue=$3

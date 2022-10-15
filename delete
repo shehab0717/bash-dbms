@@ -24,7 +24,7 @@ else
     tmpFile=$PWD/tmp
     for line in $(cat $tableFile)
     do
-        if ! cehckCondition "$line" $colNumber "$trueValue" ; then
+        if ! checkCondition "$line" $colNumber "$trueValue" ; then
             echo "$line" >> $tmpFile
         fi
     done

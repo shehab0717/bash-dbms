@@ -28,7 +28,29 @@ else
             if duplicateKey "${splitedValues[0]}" $tableName ; then
                 echo "Error: duplicate key (${splitedValues[0]})"
             else
-                echo $(echo $values | awk '{gsub(/,/,":"); print}') >> $tableFile
+                invalidValues=''
+                for i in ${!splitedValues[@]}
+                do
+                    type=$(colType $tableName $(( $i + 1)))
+                    value=${splitedValues[$i]}
+                    if ! validValue $value $type ;then
+                        invalidValues=true
+                        echo "Error: value ($value) not of type ($type)"
+                        break
+                    fi
+                done
+                if [[ -z $invalidValues ]]; then
+                    record=''
+                    for value in ${splitedValues[@]}
+                    do
+                        if [[ -z $record ]]; then
+                            record=$value
+                        else
+                            record="$record:$value"
+                        fi
+                    done
+                    echo "$record" >> $tableFile
+                fi
             fi
         else
             echo "Erro: Your table has $columnsCount columns, you entered ${#splitedValues[@]} values"

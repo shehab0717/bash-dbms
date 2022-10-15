@@ -194,5 +194,25 @@ tablePath () {
 
 
 metaPath () {
-    echo "$HOME/shql_db/$CURRENTDB/meat/$1"
+    echo "$HOME/shql_db/$CURRENTDB/meta/$1"
+}
+
+colType () {
+    tableName=$1
+    colNumber=$2
+    type=$(tail -n+2 $(metaPath $tableName) | grep -w $colNumber | cut -d: -f 3)
+    echo $type
+}
+
+validValue () {
+    value=$1
+    type=$2
+    
+    if [[ $type == 'string' ]]; then
+        return 0
+    elif [[ $type == 'int' && $value =~ ^[1-9][0-9]* ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
